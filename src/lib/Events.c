@@ -1,47 +1,54 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "../include/Events.h"
+#include "../include/Task.h"
 
-Events* EventsCreate(size_t size) {
+Events* EventsCreate() {
     Events* this = malloc(sizeof(Events));
-    this->fifo = malloc(sizeof(Task*) * size);
-    this->size = size;
-    this->writeHead = 0;
-    this->readHead = 0;
+    this->count = 0;
+    this->first = NULL;
+    this->last = NULL;
     return this;
 }
 
-static size_t EventsCount(Events* this) {
-    return this->writeHead - this->readHead;
-}
-
 void EventsDestroy(Events* this) {
-    free(this->fifo);
     free(this);
 }
 
-void EventsPush(Events* this, void (*function)(void*), void* data) {
-    if (this->writeHead >= this->size) {
-        // TODO - realloc list
+void EventsPush(Events* this, void (*function)(void*), void* data, char* title) {
+    Task* task = TaskCreate(function, data, title);
+    bool fifo_empty = this->first == NULL;
+    if (fifo_empty) {
+        this->first = task;
     } else {
-        Task* handler = TaskCreate(function, data);
-        this->fifo[this->writeHead++] = handler;
+        this->last->next = task;
     }
+    this->last = task;
+    this->count++;
 }
 
 Task* EventsUnshift(Events* this) {
-    if (EventsCount(this) > 0) {
-        return this->fifo[this->readHead++];
-    } else {
-        return NULL;
+
+    Task* task = this->first;
+    if (task != NULL) {
+        this->first = this->first->next;
     }
+
+    if (this->count > 0) {
+        this->count--;
+    }
+    if (this->count == 0) {
+        this->last = NULL;
+        this->first = NULL;
+    }
+    return task;
 }
 
 void EventsRun(Events* this) {
-    while (EventsCount(this)) {
-        Task* handler = EventsUnshift(this);
-        if (handler != NULL) {
-            TaskCall(handler);
-            TaskDestroy(handler);
-        }
+    while (this->count) {
+        Task* task = EventsUnshift(this);
+        TaskCall(task);
+        TaskDestroy(task);
     }
 }

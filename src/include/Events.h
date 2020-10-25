@@ -3,16 +3,15 @@
 #include "./Task.h"
 
 typedef struct Events {
-    Task** fifo;
-    size_t size;
-    int writeHead;
-    int readHead;
+    size_t count;
+    Task* first;
+    Task* last;
 } Events;
 
-Events* EventsCreate(size_t);
+Events* EventsCreate();
 void EventsDestroy(Events*);
 void EventsRun(Events*);
-void EventsPush(Events*, void (*)(void*), void*);
-Task* EventsPop(Events*);
+void EventsPush(Events*, void (*)(void*), void*, char*);
+Task* EventsUnshift(Events*);
 
 #endif
