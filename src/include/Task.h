@@ -4,11 +4,10 @@
 typedef struct Task {
     void (*function)(void*);
     void* data;
-    char* title;
     struct Task* next;
 } Task;
 
-Task* TaskCreate(void (*)(void*), void*, char*);
+Task* TaskCreate(void (*)(void*), void*);
 void TaskCall(Task*);
 void TaskDestroy(Task*);
 

@@ -16,8 +16,8 @@ void EventsDestroy(Events* this) {
     free(this);
 }
 
-void EventsPush(Events* this, void (*function)(void*), void* data, char* title) {
-    Task* task = TaskCreate(function, data, title);
+void EventsPush(Events* this, void (*function)(void*), void* data) {
+    Task* task = TaskCreate(function, data);
     bool fifo_empty = this->first == NULL;
     if (fifo_empty) {
         this->first = task;

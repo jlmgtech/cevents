@@ -11,7 +11,7 @@ typedef struct Events {
 Events* EventsCreate();
 void EventsDestroy(Events*);
 void EventsRun(Events*);
-void EventsPush(Events*, void (*)(void*), void*, char*);
+void EventsPush(Events*, void (*)(void*), void*);
 Task* EventsUnshift(Events*);
 
 #endif

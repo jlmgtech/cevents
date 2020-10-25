@@ -14,7 +14,7 @@ void load_img(void* _) {
         printf("image loaded!\n");
     } else {
         printf("image %f percent done \n", img_completion);
-        EventsPush(events, load_img, NULL, "load_img");
+        EventsPush(events, load_img, NULL);
         float_sleep(random_fraction()/2.0);
     }
 }
@@ -25,7 +25,7 @@ void load_data(void* _) {
         printf("data loaded!\n");
     } else {
         printf("data %f percent done \n", data_completion);
-        EventsPush(events, load_data, NULL, "load_data");
+        EventsPush(events, load_data, NULL);
         float_sleep(random_fraction()/2.0);
     }
 }
@@ -34,8 +34,8 @@ int main() {
     printf("\n\nsup\n");
 
     events = EventsCreate();
-    EventsPush(events, load_data, NULL, "load_data");
-    EventsPush(events, load_img, NULL, "load_img");
+    EventsPush(events, load_data, NULL);
+    EventsPush(events, load_img, NULL);
     EventsRun(events);
     destroy(events);
 
