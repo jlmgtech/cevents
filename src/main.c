@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "./include/Task.h"
 #include "./include/Events.h"
-#include "./include/util.h" // timing and rand functions
+#include "./include/util.h"
 #include "./include/generics.h"
 
 Events* events;

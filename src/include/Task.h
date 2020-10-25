@@ -4,9 +4,8 @@
 typedef struct Task {
     void (*function)(void*);
     void* data;
-    struct Task* next;
-    struct Task* prev;
     char* title;
+    struct Task* next;
 } Task;
 
 Task* TaskCreate(void (*)(void*), void*, char*);
