@@ -13,7 +13,8 @@ Simple event loop in c.
 # roadmap
 
 * [x] atomic push and unshift operations so different threads can push onto the event queue
-* [ ] integrate promises
+* [x] integrate promises
+* [ ] test promises
 * [ ] test windows, mac, linux, IOS, and android support (should work, but is only tested on linux so far)
 
 # bonus integrations
