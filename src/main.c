@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <signal.h>
+#include <pthread.h>
 #include "./include/Events.h"
 #include "./include/util.h"
 #include "./include/generics.h"
+#include "./include/Promise.h"
 
 Events* events;
 float img_completion = 0.0;
@@ -30,8 +34,24 @@ void load_data(void* _) {
     }
 }
 
+void InputManager(void* data) {
+    for (int i = 0; true; i++) {
+        sleep(2);
+        data_completion = 0.0;
+        EventsPush(events, load_data, NULL);
+    }
+}
+
 int main() {
     printf("\n\nsup\n");
+
+    // start a new thread
+    pthread_t thread;
+    int rc = pthread_create(&thread, NULL, InputManager, NULL);
+    if (rc) {
+        fprintf(stderr, "ERROR: return code from pthread_create is %d\n", rc);
+        exit(1);
+    }
 
     events = EventsCreate();
     EventsPush(events, load_data, NULL);

@@ -1,10 +1,13 @@
-test: dist/main
-	./dist/main
+test: dist/test
+	./dist/test
 
-dist/main: dist/main.o dist/Events.o dist/Task.o
-	gcc -o $@ $^
+dist/test: dist/test.o dist/Events.o dist/Task.o dist/Promise.o
+	gcc -o $@ $^ -pthread -lrt
 
-dist/main.o: src/main.c
+dist/test.o: src/test.c
+	gcc -c -o $@ $^
+
+dist/Promise.o: src/lib/Promise.c
 	gcc -c -o $@ $^
 
 dist/Events.o: src/lib/Events.c
@@ -13,8 +16,8 @@ dist/Events.o: src/lib/Events.c
 dist/Task.o: src/lib/Task.c
 	gcc -c -o $@ $^
 
+dist/Promise.o: src/lib/Promise.c
+	gcc -c -o $@ $^
+
 clean:
-	rm -fv dist/main
-	rm -fv dist/main.o
-	rm -fv dist/Events.o
-	rm -fv dist/Task.o
+	rm -fv dist/*

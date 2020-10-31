@@ -1,6 +1,11 @@
+#include <pthread.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <sys/time.h>
+#include <signal.h>
 #include "../include/Events.h"
 #include "../include/Task.h"
 
@@ -9,14 +14,30 @@ Events* EventsCreate() {
     this->count = 0;
     this->first = NULL;
     this->last = NULL;
-    return this;
+    if (pthread_mutex_init(&this->lock, NULL) == -1) {
+        fprintf(stderr, "ERROR: couldn't init mutex\n");
+        return NULL;
+    } else {
+        return this;
+    }
 }
 
 void EventsDestroy(Events* this) {
+    pthread_mutex_destroy(&this->lock);
     free(this);
 }
 
+static void EventsLock(Events* this) {
+    pthread_mutex_lock(&this->lock);
+}
+
+static void EventsUnlock(Events* this) {
+    pthread_mutex_unlock(&this->lock);
+}
+
 void EventsPush(Events* this, void (*function)(void*), void* data) {
+    EventsLock(this);
+
     Task* task = TaskCreate(function, data);
     bool fifo_empty = this->first == NULL;
     if (fifo_empty) {
@@ -26,9 +47,13 @@ void EventsPush(Events* this, void (*function)(void*), void* data) {
     }
     this->last = task;
     this->count++;
+
+    EventsUnlock(this);
 }
 
 Task* EventsUnshift(Events* this) {
+
+    EventsLock(this);
 
     Task* task = this->first;
     if (task != NULL) {
@@ -42,7 +67,10 @@ Task* EventsUnshift(Events* this) {
         this->last = NULL;
         this->first = NULL;
     }
+
+    EventsUnlock(this);
     return task;
+
 }
 
 void EventsRun(Events* this) {
